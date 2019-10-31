@@ -1,4 +1,4 @@
-function [dataBase] = detect_n1peak_ECoGccep(dataBase, cfg)
+function [dataBase] = detect_n1peak_ECoG_ccep(dataBase, cfg)
 
 % Function for detecting the the N1 peaks of CCEPs
 
@@ -75,35 +75,36 @@ function [dataBase] = detect_n1peak_ECoGccep(dataBase, cfg)
 
 amplitude_thresh = cfg.amplitude_thresh;
 n1_peak_range = cfg.n1_peak_range;
+epoch_prestim = cfg.epoch_prestim;
+epoch_length = cfg.epoch_length;
 
 %% Script
 % iterate over all subjects in database
 for subj = 1:length(dataBase)
     % iterate over all their runs
-    for runs = 1:length(dataBase(subj).metadata)
-        
+%     for runs = 1:length(dataBase(subj).metadata)
         
         % output in channels X stimulations X [latency amplitude]
-        n1_peak = NaN(size(dataBase(subj).metadata(runs).epoched_data_avg,1), ...
-            size(dataBase(subj).metadata(runs).epoched_data_avg,2),2);
+        n1_peak = NaN(size(dataBase(subj).cc_epoch_sorted_avg,1), ...
+            size(dataBase(subj).cc_epoch_sorted_avg,2),2);
 
         % for every averaged stimulation
-        for jj = 1:size(dataBase(subj).metadata(runs).epoched_data_avg,2)
+        for jj = 1:size(dataBase(subj).cc_epoch_sorted_avg,2)
             % for every channel
-            for ii = 1:size(dataBase(subj).metadata(runs).epoched_data_avg,1)
+            for ii = 1:size(dataBase(subj).cc_epoch_sorted_avg,1)
 
                 % create time struct 
-                tt = [1:dataBase(subj).metadata(runs).epoch_length*dataBase(subj).metadata(runs).data_hdr.Fs] / ...
-                    dataBase(subj).metadata(runs).data_hdr.Fs - dataBase(subj).metadata(runs).epoch_prestim_length;
+                tt = (1:epoch_length*dataBase(subj).ccep_header.Fs) / ...
+                    dataBase(subj).ccep_header.Fs - epoch_prestim;
                
                 % baseline subtraction: take median of part of the averaged signal for
                 % this stimulation pair before stimulation, which is the half of the
                 % epoch                
                 baseline_tt = tt>-2 & tt<-.1;
-                signal_median = median(dataBase(subj).metadata(runs).epoched_data_avg(ii,jj,baseline_tt),3);
+                signal_median = median(dataBase(subj).cc_epoch_sorted_avg(ii,jj,baseline_tt),3);
 
                 % subtract median baseline from signal
-                new_signal = squeeze(dataBase(subj).metadata(runs).epoched_data_avg(ii,jj,:)) - signal_median;
+                new_signal = squeeze(dataBase(subj).cc_epoch_sorted_avg(ii,jj,:)) - signal_median;
                 % testplot new signal: plot(tt,squeeze(new_signal))
 
                 % take area before the stimulation of the new signal and calculate its SD
@@ -116,8 +117,8 @@ for subj = 1:length(dataBase)
                 end
 
                 % when the electrode is stimulated
-                if ii == dataBase(subj).metadata(runs).stimulated_pairs(jj,1) || ...
-                        ii == dataBase(subj).metadata(runs).stimulated_pairs(jj,2)
+                if ii == dataBase(subj).cc_stimsets(jj,1) || ...
+                        ii == dataBase(subj).cc_stimsets(jj,2)
                     n1_peak_sample = NaN;
                     n1_peak_amplitude = NaN;
 
@@ -198,8 +199,8 @@ for subj = 1:length(dataBase)
         end
         
         % write n1_peak (sample and amplitude) to database
-        dataBase(subj).metadata(runs).n1_peak_sample = n1_peak(:,:,1);
-        dataBase(subj).metadata(runs).n1_peak_amplitude = n1_peak(:,:,2); 
+        dataBase(subj).ccep.n1_peak_sample = n1_peak(:,:,1);
+        dataBase(subj).ccep.n1_peak_amplitude = n1_peak(:,:,2); 
 
     end
 end

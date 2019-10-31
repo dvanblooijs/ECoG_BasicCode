@@ -1,7 +1,12 @@
-function dataBase = preprocess_ccep(dataBase,cfg)
+function dataBase = preprocess_ECoG_ccep(dataBase,cfg)
 epoch_length = cfg.epoch_length;
 epoch_prestim = cfg.epoch_prestim;
-minstim = cfg.minstim;
+
+if exist('minstim','var') == 0
+    minstim = 5;
+else
+    minstim = cfg.minstim;
+end
 
 for subj = 1:size(dataBase,2)
     
@@ -40,7 +45,7 @@ for subj = 1:size(dataBase,2)
         [cc_stimsets,~,IC] = unique(stimelek,'rows');
         n = histcounts(IC,'BinMethod','integers');
         if any(diff(n) ~= 0)
-            fprintf('ERROR: %s some stimulation pairs are stimulated less/more than all others\n',dataBase(subj).subj)
+            fprintf('ERROR: %s some stimulation pairs are stimulated less/more than all others\n',dataBase(subj).sub_label)
         end
         
     end
@@ -101,6 +106,6 @@ for subj = 1:size(dataBase,2)
     dataBase(subj).tt_epoch_sorted = tt_epoch_sorted;
     dataBase(subj).cc_epoch_sorted_avg = cc_epoch_sorted_avg;
     
-    fprintf('...%s has been epoched and averaged... \n',dataBase(subj).subj)
+    fprintf('...%s has been epoched and averaged... \n',dataBase(subj).sub_label)
     
 end
