@@ -1,4 +1,4 @@
-function dataBase = preprocess_ECoG_ccep(dataBase,cfg)
+function dataBase = preprocess_ECoG_spes(dataBase,cfg)
 epoch_length = cfg.epoch_length;
 epoch_prestim = cfg.epoch_prestim;
 
@@ -40,7 +40,7 @@ for subj = 1:size(dataBase,2)
     if any(diff(n) ~= 0)
         stimremove = find(n<minstim); % remove al stimulation pairs that are stimulated less than 5 times
         
-        stimelek(IC==stimremove,:) = [];
+        stimelek(any(IC==stimremove,2),:) = [];
         
         [cc_stimsets,~,IC] = unique(stimelek,'rows');
         n = histcounts(IC,'BinMethod','integers');
