@@ -3,7 +3,7 @@
 % date: September 2019
 
 %% pre-allocation
-
+clear 
 config_CCEP
 
 %% load data
@@ -22,13 +22,15 @@ dataBase.ccep.n1_peak_range = cfg.n1_peak_range;
 dataBase.ccep.cc_stimsets = dataBase.cc_stimsets;
 dataBase.ccep.ch = dataBase.ch;
 
+disp('Detection of ERs is completed')
+
 %% visually check detected cceps
 
 dataBase = visualRating_ccep(dataBase,cfg);
 
 %% save ccep
 
-targetFolder = [cfg.CCEPpath, dataBase(1).sub_label,'/',dataBase(1).ses_label,'/'];
+targetFolder = [cfg.CCEPpath, dataBase(1).sub_label,'/',dataBase(1).ses_label,'/', dataBase(1).run_label,'/'];
 
 % Create the folder if it doesn't exist already.
 if ~exist(targetFolder, 'dir')
