@@ -25,7 +25,11 @@ if ~any(contains(fieldnames(cfg),'change_size'))
 end
 
 % pick a viewing angle:
-v_dirs = [90 0; 270 30]; %[90 0;90 -60;270 -60;0 0;270 0; 270 60]; %zij, onder, .., voor, zij, zijboven
+if ~any(contains(fieldnames(cfg),'v_dirs'))
+   v_dirs = [90 0; 270 30]; %[90 0;90 -60;270 -60;0 0;270 0; 270 60]; %zij, onder, .., voor, zij, zijboven
+else
+    v_dirs = cfg.v_dirs;
+end
 
 % gifti file name:
 dataGiiName = fullfile(cfg.home_directory,'derivatives','surfaces',dataBase(1).sub_label,dataBase(1).ses_label,...
