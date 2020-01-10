@@ -22,17 +22,14 @@ for subj = 1:size(dataBase,2)
             tmpsig = squeeze(dataBase(subj).cc_epoch_sorted(chan,:,stimp,:));
             tmpsig=tmpsig(:,round(fs):round(3*fs)-1);                                             % get 2 seconds (1sec before stim,1 sec after)
             
-            if ~any(isnan(tmpsig)) % only run ERSP if there are 10 stimuli, no less
+            if sum(~isnan(tmpsig(:,1))) > 5 % only run ERSP if there are more than 5 stimuli
                 EEG.pnts=size(tmpsig,2);                                                % Number of samples
                 EEG.srate=fs;                                                           % sample frequency
                 EEG.xmin=-1;                                                            % x axis limits
                 EEG.xmax=1;
                 tlimits = [EEG.xmin, EEG.xmax]*1000;                                    % time limit
-                tmpsig = reshape(tmpsig', [1, size(tmpsig,2)*10]);                       % Get all 10 stim in 1 row
-                
-                %%Define parameters for EEGlab
-                cycles = [3 0.8];
-                frange = [10 250];                                                      % frequency range to plot/calculate spectrogram
+                rm_nan = find(~isnan(tmpsig(:,1)));
+                tmpsig = reshape(tmpsig(rm_nan,:)', [1, size(tmpsig,2)*size(rm_nan,1)]);                       % Get all 10 stim in 1 row
                 
                 pointrange1 = round(max((tlimits(1)/1000-EEG.xmin)*EEG.srate, 1));
                 pointrange2 = round(min((tlimits(2)/1000-EEG.xmin)*EEG.srate, EEG.pnts));
@@ -41,6 +38,10 @@ for subj = 1:size(dataBase,2)
                 chlabel = sprintf('TF-SPES stim %s-%s response %s',...
                     dataBase(subj).cc_stimchans{stimp,1},dataBase(subj).cc_stimchans{stimp,2},...
                     dataBase(subj).ch{chan});
+                
+                %%Define parameters for EEGlab
+                cycles = [3 0.8];
+                frange = [10 250];                                                      % frequency range to plot/calculate spectrogram
                 
                 % Michelle used gjnewtimef but the results are equal so I choose to use newtimef
                 %             [ERSPgj,~,powbasegj,timesgj,freqsgj,erspbootgj,~]=gjnewtimef(tmpsig(:,:),length(pointrange),[tlimits(1) tlimits(2)],EEG.srate,cycles,'type','coher','title',chlabel, 'padratio',4,...
@@ -96,24 +97,28 @@ for subj = 1:size(dataBase,2)
             end
         end
         
-        if strcmp(cfg.saveERSP,'yes')
-            
-            targetFolder = output;
-            fileName=['/' dataBase(subj).sub_label,'_' dataBase(subj).ses_label,...
-                '_', dataBase(subj).task_label,'_',dataBase(subj).run_label '_ERSP.mat'];
-            cc_stimchans = dataBase(subj).cc_stimchans;
-            cc_stimsets = dataBase(subj).cc_stimsets;
-            ch = dataBase(subj).ch;
-            
-            save([targetFolder,fileName], 'allERSP', 'allERSP2', 'allERSPboot','allERSPboot2','times','freqs','cc_stimchans','cc_stimsets','ch');
-        end
         
-        dataBase(subj).ERSP.allERSP = allERSP;
-        dataBase(subj).ERSP.allERSPboot = allERSPboot;
-        dataBase(subj).ERSP.times = times;
-        dataBase(subj).ERSP.freqs = freqs;
         
     end
+    
+    dataBase(subj).ERSP.allERSP = allERSP;
+    dataBase(subj).ERSP.allERSPboot = allERSPboot;
+    dataBase(subj).ERSP.times = times;
+    dataBase(subj).ERSP.freqs = freqs;
+    
+    if strcmp(cfg.saveERSP,'yes')
+        
+        targetFolder = output;
+        fileName=['/' dataBase(subj).sub_label,'_' dataBase(subj).ses_label,...
+            '_', dataBase(subj).task_label,'_',dataBase(subj).run_label '_ERSP.mat'];
+        cc_stimchans = dataBase(subj).cc_stimchans;
+        cc_stimsets = dataBase(subj).cc_stimsets;
+        ch = dataBase(subj).ch;
+        
+        save([targetFolder,fileName], 'allERSP', 'allERSP2', 'allERSPboot','allERSPboot2','times','freqs','cc_stimchans','cc_stimsets','ch');
+    end
+    
+    
 end
 
 

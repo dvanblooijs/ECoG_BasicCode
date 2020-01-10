@@ -8,10 +8,26 @@ else
     minstim = cfg.minstim;
 end
 
-for subj = 1:size(dataBase,2)
+for subj = 1:size(dataBase,2)   
+    %% define artefact period
+    
+    ev_artefact_start = dataBase(subj).tb_events.sample_start(strcmp(dataBase(subj).tb_events.trial_type,'artefact'));
+    ev_artefact_stop = dataBase(subj).tb_events.sample_end(strcmp(dataBase(subj).tb_events.trial_type,'artefact'));
+    
+    if iscell(ev_artefact_start)
+        ev_artefact_start = str2double(ev_artefact_start);
+    end
+    if iscell(ev_artefact_stop)
+        ev_artefact_stop = str2double(ev_artefact_stop);
+    end
+    
+    ev_artefact = [];
+    for i=1:size(ev_artefact_start,1)
+        ev_artefact = [ev_artefact, ev_artefact_start(i):ev_artefact_stop(i)];
+    end
     
     %% unique stimulation pairs
-    stimpair = dataBase(subj).tb_events.electrical_stimulation_site(strcmp(dataBase(subj).tb_events.sub_type,'SPES'));
+    stimpair = dataBase(subj).tb_events.electrical_stimulation_site(contains(dataBase(subj).tb_events.sub_type,'SPES') & ~contains(dataBase(subj).tb_events.electrical_stimulation_site,'n/a')) ;
     
     stimnum = NaN(size(stimpair,1),2);
     for stimp = 1:size(stimpair,1)
@@ -97,6 +113,8 @@ for subj = 1:size(dataBase,2)
                 
                 if dataBase(subj).tb_events.sample_start(eventnum(n))-round(epoch_prestim*dataBase(subj).ccep_header.Fs)+1< 0
                     % do nothing
+                elseif ismember(dataBase(subj).tb_events.sample_start(eventnum(n)),ev_artefact)
+                    % do nothing, because part of artefact
                 else
                     cc_epoch_sorted(elec,n,ll,:) = dataBase(subj).data(elec,dataBase(subj).tb_events.sample_start(eventnum(n))-round(epoch_prestim*dataBase(subj).ccep_header.Fs)+1:dataBase(subj).tb_events.sample_start(eventnum(n))+round((epoch_length-epoch_prestim)*dataBase(subj).ccep_header.Fs));
                     tt_epoch_sorted(n,ll,:) = dataBase(subj).tb_events.sample_start(eventnum(n))-round(epoch_prestim*dataBase(subj).ccep_header.Fs)+1:dataBase(subj).tb_events.sample_start(eventnum(n))+round((epoch_length-epoch_prestim)*dataBase(subj).ccep_header.Fs);

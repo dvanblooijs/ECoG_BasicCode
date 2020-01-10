@@ -47,3 +47,4 @@ ccep.dataName = dataBase(1).dataName;
 
 save([targetFolder,fileName], 'ccep');
 
+fprintf('CCEP is saved in %s%s \n',targetFolder,fileName)

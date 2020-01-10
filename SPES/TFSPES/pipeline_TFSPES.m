@@ -4,7 +4,7 @@
 % date: Sept 2019
 
 %% pre-allocation
-
+clear
 config_TFSPES
 
 %% load data
@@ -24,8 +24,8 @@ dataBase = makeTFSPES(dataBase,cfg);
 %% visual check of TFSPES plots
 
 if ~any(contains(fieldnames(dataBase),'ERSP'))
-    dataBase.ERSP = load(fullfile(cfg.output,cfg.sub_label,cfg.ses_label,cfg.run_label,...
-        [cfg.sub_label,'_',cfg.ses_label,'_',cfg.task_label,'_', cfg.run_label,'_ERSP.mat']));
+    dataBase.ERSP = load(fullfile(cfg.TFSPESpath,cfg.sub_labels{1},cfg.ses_label,cfg.run_label{1},...
+        [cfg.sub_labels{1},'_',cfg.ses_label,'_',cfg.task_label,'_', cfg.run_label{1},'_ERSP.mat']));
 end
 
 stimps = 1:size(dataBase(1).cc_epoch_sorted,3);
