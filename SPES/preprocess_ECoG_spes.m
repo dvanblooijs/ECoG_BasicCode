@@ -37,7 +37,7 @@ for subj = 1:size(dataBase,2)
         end
     end
     
-    stimcur = str2double(dataBase(subj).tb_events.electrical_stimulation_current(strcmp(dataBase(subj).tb_events.sub_type,'SPES')));
+    stimcur = str2double(dataBase(subj).tb_events.electrical_stimulation_current(contains(dataBase(subj).tb_events.sub_type,'SPES') & ~contains(dataBase(subj).tb_events.electrical_stimulation_site,'n/a')));
     
     if strcmp(cfg.dir,'yes') && strcmp(cfg.amp,'yes')
         stimelek = [stimnum stimcur];
@@ -94,7 +94,7 @@ for subj = 1:size(dataBase,2)
     tt_epoch_sorted = NaN(dataBase(subj).max_stim,size(dataBase(subj).cc_stimsets,1),t); % samplenumbers for each epoch
     
     for elec = 1:size(dataBase(subj).data,1) % for all channels
-        for ll = 1:length(dataBase(subj).cc_stimsets) % for all epochs with >4 stimuli
+        for ll = 1:size(dataBase(subj).cc_stimsets,1) % for all epochs with >4 stimuli
             if strcmp(cfg.dir,'no')
                 eventnum1 = find(strcmp(dataBase(subj).tb_events.electrical_stimulation_site,[dataBase(subj).cc_stimchans{ll,1}, '-',dataBase(subj).cc_stimchans{ll,2}]));
                 eventnum2 = find(strcmp(dataBase(subj).tb_events.electrical_stimulation_site,[dataBase(subj).cc_stimchans{ll,2}, '-',dataBase(subj).cc_stimchans{ll,1}]));
@@ -123,7 +123,7 @@ for subj = 1:size(dataBase,2)
         end
     end
     
-    cc_epoch_sorted_avg = squeeze(nanmean(cc_epoch_sorted,2));
+    cc_epoch_sorted_avg(:,1:ll,:) = squeeze(nanmean(cc_epoch_sorted,2));
     
     dataBase(subj).cc_epoch_sorted = cc_epoch_sorted;
     dataBase(subj).tt_epoch_sorted = tt_epoch_sorted;
