@@ -61,10 +61,10 @@ for i=1:size(sub_labels,2)
     channelsName = fullfile(D(1).folder, D(1).name);
     
     tb_channels = readtable(channelsName,'FileType','text','Delimiter','\t');
-    log_ch_incl = strcmp(tb_channels.type,'ECOG');
+    log_ch_incl = strcmp(tb_channels.type,'ECOG')|strcmp(tb_channels.type,'SEEG');
     
     ch = tb_channels.name;
-    ch_incl = {ch{log_ch_incl}}';
+    ch_incl = ch(log_ch_incl);
     
     data = -1*ccep_data(log_ch_incl,:);
     
