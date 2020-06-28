@@ -6,6 +6,13 @@ tt = -cfg.epoch_prestim+1/fs:1/fs:cfg.epoch_length-cfg.epoch_prestim;
 
 dataBase.ccep.checked = zeros(size(dataBase.cc_epoch_sorted_avg,1),size(dataBase.cc_epoch_sorted_avg,2));
 
+if sum(strcmp(fieldnames(dataBase),'ccep'))==0
+        dataBase.ccep.n1_peak_sample = zeros(size(dataBase.cc_epoch_sorted_avg,1),size(dataBase.cc_epoch_sorted_avg,2));
+elseif  sum(strcmp(fieldnames(dataBase.ccep),'n1_peak_amplitude'))==0
+        dataBase.ccep.n1_peak_sample = zeros(size(dataBase.cc_epoch_sorted_avg,1),size(dataBase.cc_epoch_sorted_avg,2));    
+end
+
+    
 for stimp = 1:size(dataBase.cc_epoch_sorted_avg,2)
     for chan =1 :size(dataBase.cc_epoch_sorted_avg,1)
         

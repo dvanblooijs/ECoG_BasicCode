@@ -27,10 +27,10 @@ cfg.n1_peak_range = 100;
 %% set path
 if contains(cfg.sub_labels,'REC2Stim')
     % REC2Stim study
-    cfg.CCEPpath = '/Fridge/REC2Stimstudy/derivatives/CCEP/';
-    cfg.dataPath = '/Fridge/REC2Stimstudy/';
+    cfg.CCEPpath = '/Fridge/KNF/REC2Stimstudy/derivatives/CCEP/';
+    cfg.dataPath = '/Fridge/KNF/REC2Stimstudy/';
 elseif contains(cfg.sub_labels,'RESP')
     % RESPect database
     cfg.CCEPpath = '/Fridge/users/dorien/derivatives/CCEP/';
-    cfg.dataPath = '/Fridge/chronic_ECoG/';
+    cfg.dataPath = '/Fridge/KNF/chronic_ECoG/';
 end

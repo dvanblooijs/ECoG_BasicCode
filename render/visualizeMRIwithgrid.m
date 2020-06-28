@@ -20,9 +20,9 @@ cfg.sub_labels = ['sub-' input('Patient number (RESPXXXX/REC2StimXX): ','s')];
 cfg.ses_label = input('Session number (ses-X): ','s');
 cfg.hemisphere = input('Hemisphere with implanted electrodes [l/r]: ','s');
 
-% cfg.view_atlas = 'yes';
-cfg.view_atlas = 'no';
-cfg.v_dirs = [90 60];
+cfg.view_atlas = 'yes';
+% cfg.view_atlas = 'no';
+cfg.v_dirs = [90,40];%[90 60];
 
 %% set folders
 
